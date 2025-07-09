@@ -1,0 +1,11 @@
+# This toml file is used for production. Only edit this file if you have a need for it
+# When you add a production config, values will be auto-populated here
+# Read more at https://docs.gadget.dev/guides/plugins/shopify/advanced-topics/shopify-app-toml
+
+client_id = "8c2eea8f62a6543dddfe79079dc4ec05"
+name = "nu3"
+application_url = "https://nu3.gadget.app/api/shopify/install-or-render"
+embedded = true
+
+[build]
+include_config_on_deploy = true
