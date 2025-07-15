@@ -6,8 +6,9 @@ export const options = {
       { every: "day", at: "06:00 UTC" },
     ],
   },
-}
+};
 
+// Standard run method (used by scheduler)
 export const run = async ({ api }: { api: any }) => {
   let status = "success";
   let message = "Best Before Notice Manager executed successfully";
