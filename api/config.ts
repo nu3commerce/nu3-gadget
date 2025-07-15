@@ -10,7 +10,8 @@ const requiredEnvVars = [
   'AKENEO_CLIENT_ID',
   'AKENEO_CLIENT_SECRET',
   'AKENEO_USERNAME',
-  'AKENEO_PASSWORD'
+  'AKENEO_PASSWORD',
+  'PRICE_API_TOKEN',
 ];
 
 const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
@@ -52,4 +53,12 @@ export const config: AppConfig = {
       AND sku is not null
     GROUP BY sku
   `
-}; 
+};
+
+// --- PriceApi Sync Config ---
+export const PRICE_API_TOKEN = process.env.PRICE_API_TOKEN!;
+export const PRICE_API_ENDPOINT = 'https://api.priceapi.com';
+export const BIGQUERY_DATASET_PRICEAPI = 'DS_09_1_src_priceapi';
+export const BIGQUERY_TABLE_PREFIX_PRICEAPI = 'src_priceapi_price_data_';
+export const PRICE_API_BATCH_SIZE = 500;
+export const PRICE_API_COUNTRIES = ['AT', 'CH', 'DE', 'FR']; 

@@ -27,6 +27,21 @@ export default function Index() {
               columns={["createdAt", "status", "message", "error", "source"]}
               initialSort={{ createdAt: "Descending" }}
               paginate={false}
+              filter={{ source: { isSet: true, equals: "BestBeforeNotice" } }}
+            />
+          </Card>
+        </Layout.Section>
+        <Layout.Section>
+          <Card>
+            <Text variant="headingMd" as="h6">
+              PriceApi Sync Logs
+            </Text>
+            <AutoTable
+              model={api.logs}
+              columns={["createdAt", "status", "message", "error", "source"]}
+              initialSort={{ createdAt: "Descending" }}
+              paginate={false}
+              filter={{ source: { isSet: true, equals: "PriceApiSync" } }}
             />
           </Card>
         </Layout.Section>
