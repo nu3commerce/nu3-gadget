@@ -12,6 +12,11 @@ export const permissions: GadgetPermissions = {
     "shopify-app-users": {
       storageKey: "Role-Shopify-App",
       models: {
+        logs: {
+          read: {
+            filter: "",
+          },
+        },
         shopifyGdprRequest: {
           read: {
             filter:

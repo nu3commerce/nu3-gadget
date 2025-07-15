@@ -13,17 +13,24 @@ import {
 import { api } from "../api";
 
 export default function Index() {
+  // Remove manual log fetching logic
   return (
     <Page title="nu3 Platform">
       <Layout>
         <Layout.Section>
-          <Banner tone="success">
-            <Text variant="bodyMd" as="p">
-              Successfully connected your nu3 Platform to Shopify
+          <Card>
+            <Text variant="headingMd" as="h6">
+              Best Before Notice Manager
             </Text>
-          </Banner>
+            <AutoTable
+              model={api.logs}
+              columns={["createdAt", "status", "message", "error", "source"]}
+              initialSort={{ createdAt: "Descending" }}
+              paginate={false}
+            />
+          </Card>
         </Layout.Section>
       </Layout>
-    </Page >
+    </Page>
   );
 }
