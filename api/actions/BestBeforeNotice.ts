@@ -1,5 +1,13 @@
 import { BestBeforeNoticeManager } from '../services/bestbeforenoticemanager';
 
+export const options = {
+  triggers: {
+    scheduler: [
+      { every: "day", at: "06:00 UTC" },
+    ],
+  },
+}
+
 export const run = async ({ api }: { api: any }) => {
   let status = "success";
   let message = "Best Before Notice Manager executed successfully";

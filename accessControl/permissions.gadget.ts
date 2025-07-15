@@ -11,11 +11,13 @@ export const permissions: GadgetPermissions = {
   roles: {
     "shopify-app-users": {
       storageKey: "Role-Shopify-App",
+      default: {
+        read: true,
+        action: true,
+      },
       models: {
         logs: {
-          read: {
-            filter: "",
-          },
+          read: true,
         },
         shopifyGdprRequest: {
           read: {
