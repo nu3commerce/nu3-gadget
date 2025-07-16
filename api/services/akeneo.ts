@@ -111,6 +111,36 @@ export class AkeneoApiService {
         }
     }
 
+    async getThirdPartyProducts(): Promise<AkeneoProduct[]> {
+        await this.ensureAuthenticated();
+        try {
+            const products: AkeneoProduct[] = [];
+            const searchCriteria = encodeURIComponent(
+                JSON.stringify({
+                    enabled: [{ operator: "=", value: true }],
+                    own_brand: [{ operator: "=", value: false }]
+                })
+            );
+            let nextUrl: string | null = `${this.baseUrl}/api/rest/v1/products?search=${searchCriteria}&limit=100`;
+            while (nextUrl) {
+                const response = await fetch(nextUrl, {
+                    headers: {
+                        'Authorization': `Bearer ${this.accessToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (!response.ok) throw new Error(`Failed to fetch products: ${response.statusText}`);
+                const data = await response.json() as AkeneoProductsResponse;
+                products.push(...data._embedded.items);
+                nextUrl = data._links?.next?.href || null;
+            }
+            return products;
+        } catch (error) {
+            console.error('Failed to fetch products from Akeneo', error);
+            throw error;
+        }
+    }
+
     async getAllProducts(): Promise<AkeneoProduct[]> {
         await this.ensureAuthenticated();
 

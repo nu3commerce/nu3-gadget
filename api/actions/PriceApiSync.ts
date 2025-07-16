@@ -2,6 +2,7 @@ import { PriceApiSyncManager } from '../services/priceapisyncmanager';
 // All configuration is now centralized in config.ts and used by the manager.
 
 export const options = {
+  timeoutMS: 600000,
   triggers: {
     scheduler: [
       { every: "week", on: "Monday", at: "06:00 UTC" },

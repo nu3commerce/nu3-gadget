@@ -9,26 +9,38 @@ import {
     PRICE_API_COUNTRIES,
     config as globalConfig
 } from '../config';
+import { AkeneoApiService } from './akeneo';
 
 export class PriceApiSyncManager {
     private bigquery: BigQuery;
+    private akeneoApiService: AkeneoApiService;
 
     constructor() {
         this.bigquery = new BigQuery({
             projectId: globalConfig.projectId,
             keyFilename: globalConfig.credentialsPath,
         });
+        this.akeneoApiService = new AkeneoApiService();
     }
 
     public async run(): Promise<void> {
+        await this.akeneoApiService.authenticate();
+        const akeneoProducts = await this.akeneoApiService.getThirdPartyProducts();
+        console.log(`[PriceApiSync] Found ${akeneoProducts.length} third party products`);
+
+
         for (const country of PRICE_API_COUNTRIES) {
             try {
-                const eans = await this.fetchEligibleEANs(country);
+                const eans = this.filterEligibleEANs(akeneoProducts, country);
+                console.log(`[PriceApiSync] Found ${eans.length} eligible EANs for ${country}`);
                 const batches = this.chunkArray(eans, PRICE_API_BATCH_SIZE);
+                console.log(`[PriceApiSync] Found ${batches.length} batches for ${country}`);
+
                 for (const batch of batches) {
                     const jobId = await this.submitBulkRequest(country, batch);
                     const resultRows = await this.pollAndDownloadResults(jobId);
                     await this.writeToBigQuery(country, resultRows);
+                    console.log(`[PriceApiSync] Wrote ${resultRows.length} rows to BigQuery for ${country}`);
                 }
             } catch (error) {
                 console.error(`[PriceApiSync] Error for country ${country}:`, error);
@@ -37,25 +49,29 @@ export class PriceApiSyncManager {
         }
     }
 
-    private async fetchEligibleEANs(country: string): Promise<string[]> {
-        // TODO: Adjust query to match your schema and requirements
-        const query = `
-      SELECT DISTINCT p.ean AS EAN
-      FROM \
-        \ 6bi_40_data_mart_raw.dbo.raw_akeneo_product p\
-        JOIN bi_40_data_mart_raw.dbo.raw_akeneo_product_shop s ON s.sku = p.sku\
-      WHERE s.shop_code = @country\
-        AND p.brand NOT LIKE 'nu3%'\
-        AND p.ean IS NOT NULL\
-        AND (s.purchasable = 1 OR s.purchasable IS NULL)
-    `;
-        const options = {
-            query,
-            params: { country },
-            location: 'EU',
+    private filterEligibleEANs(products: any[], country: string): string[] {
+        // Map country to locale and purchasable value
+        const countryLocalePurchasable: Record<string, { locale: string, data: string }> = {
+            AT: { locale: 'de_DE', data: 'purchasable' },
+            CH: { locale: 'de_CH', data: 'purchasable' },
+            DE: { locale: 'de_DE', data: 'purchasable' },
+            FR: { locale: 'fr_FR', data: 'purchasable' },
+            IT: { locale: 'it_IT', data: 'disabled' }, // Only if you need IT
         };
-        const [rows] = await this.bigquery.query(options);
-        return rows.map((row: any) => row.EAN);
+
+        const mapping = countryLocalePurchasable[country];
+        if (!mapping) return [];
+        return products
+            .filter(product => {
+                const purchasableValues = product.values && product.values['purchasable'];
+                if (!Array.isArray(purchasableValues)) return false;
+                const hasPurchasable = purchasableValues.some(
+                    (val: any) => val.locale === mapping.locale && val.data === mapping.data
+                );
+                const ean = product.values?.ean?.[0]?.data;
+                return hasPurchasable && !!ean;
+            })
+            .map(product => product.values.ean[0].data);
     }
 
     private chunkArray<T>(arr: T[], size: number): T[][] {
@@ -70,7 +86,7 @@ export class PriceApiSyncManager {
         const endpoint = `${PRICE_API_ENDPOINT}/jobs`;
         const body = {
             token: PRICE_API_TOKEN,
-            country,
+            country: country.toLowerCase(),
             source: 'google-shopping',
             currentness: 'daily_updated',
             completeness: 'one_page',
@@ -82,7 +98,6 @@ export class PriceApiSyncManager {
             body: JSON.stringify(body),
             headers: { 'Content-Type': 'application/json' },
         });
-        if (!response.ok) throw new Error(`PriceAPI job submit failed: ${response.statusText}`);
         const data: any = await response.json();
         if (data.status !== 'new' || !data.job_id) throw new Error('PriceAPI did not return a job_id');
         return data.job_id;
