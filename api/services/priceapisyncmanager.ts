@@ -26,21 +26,16 @@ export class PriceApiSyncManager {
     public async run(): Promise<void> {
         await this.akeneoApiService.authenticate();
         const akeneoProducts = await this.akeneoApiService.getThirdPartyProducts();
-        console.log(`[PriceApiSync] Found ${akeneoProducts.length} third party products`);
-
 
         for (const country of PRICE_API_COUNTRIES) {
             try {
                 const eans = this.filterEligibleEANs(akeneoProducts, country);
-                console.log(`[PriceApiSync] Found ${eans.length} eligible EANs for ${country}`);
                 const batches = this.chunkArray(eans, PRICE_API_BATCH_SIZE);
-                console.log(`[PriceApiSync] Found ${batches.length} batches for ${country}`);
 
                 for (const batch of batches) {
                     const jobId = await this.submitBulkRequest(country, batch);
                     const resultRows = await this.pollAndDownloadResults(jobId);
-                    await this.writeToBigQuery(country, resultRows);
-                    console.log(`[PriceApiSync] Wrote ${resultRows.length} rows to BigQuery for ${country}`);
+                    //await this.writeToBigQuery(country, resultRows);
                 }
             } catch (error) {
                 console.error(`[PriceApiSync] Error for country ${country}:`, error);
