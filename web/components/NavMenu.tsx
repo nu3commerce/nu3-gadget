@@ -10,6 +10,9 @@ export function NavMenu() {
       <Link to="/template">
         Template Sync
       </Link>
+      <Link to="/recipe-sync">
+        Recipe Sync
+      </Link>
     </AppBridgeNavMenu>
   );
 }

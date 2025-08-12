@@ -152,6 +152,85 @@ export function createShopifyClient(shopId: string) {
       },
     },
     
+    // Blog API methods
+    blog: {
+      list: async () => {
+        const response = await fetch(`${baseUrl}/blogs.json`, {
+          headers: {
+            'X-Shopify-Access-Token': shopConfig.access_token,
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch blogs: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        return data.blogs;
+      },
+    },
+
+    // Article API methods
+    article: {
+      create: async (blogId: string, articleData: any) => {
+        const response = await fetch(`${baseUrl}/blogs/${blogId}/articles.json`, {
+          method: 'POST',
+          headers: {
+            'X-Shopify-Access-Token': shopConfig.access_token,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ article: articleData }),
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Failed to create article: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        return data.article;
+      },
+
+      update: async (blogId: string, articleId: string, articleData: any) => {
+        const response = await fetch(`${baseUrl}/blogs/${blogId}/articles/${articleId}.json`, {
+          method: 'PUT',
+          headers: {
+            'X-Shopify-Access-Token': shopConfig.access_token,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ article: articleData }),
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Failed to update article: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        return data.article;
+      },
+    },
+
+    // Metafield API methods
+    metafield: {
+      create: async (metafieldData: any) => {
+        const response = await fetch(`${baseUrl}/metafields.json`, {
+          method: 'POST',
+          headers: {
+            'X-Shopify-Access-Token': shopConfig.access_token,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ metafield: metafieldData }),
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Failed to create metafield: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        return data.metafield;
+      },
+    },
+
     // GraphQL API method
     graphql: async (query: string, variables?: any) => {
       const response = await fetch(`${baseUrl.replace('/admin/api/' + config.api_version, '')}/admin/api/${config.api_version}/graphql.json`, {
