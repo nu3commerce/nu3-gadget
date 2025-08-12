@@ -86,8 +86,8 @@ export default function Template() {
   }, []);
 
   // Fetch themes when shop changes
-  const fetchThemes = useCallback(async (shopDomain: string) => {
-    if (!shopDomain) return;
+  const fetchThemes = useCallback(async (shopId: string) => {
+    if (!shopId) return;
 
     setIsLoading(true);
     setError("");
@@ -100,7 +100,7 @@ export default function Template() {
     try {
       const response = await api.TemplateSync({
         action: "getThemes",
-        shopDomain
+        shopId
       });
       if (response.success && response.data) {
         setThemes(response.data.filter((theme: Theme) => theme.role !== "unpublished"));
@@ -114,8 +114,8 @@ export default function Template() {
   }, []);
 
   // Fetch templates when theme changes
-  const fetchTemplates = useCallback(async (shopDomain: string, themeId: string) => {
-    if (!shopDomain || !themeId) return;
+  const fetchTemplates = useCallback(async (shopId: string, themeId: string) => {
+    if (!shopId || !themeId) return;
 
     setIsLoading(true);
     setError("");
@@ -126,7 +126,7 @@ export default function Template() {
     try {
       const response = await api.TemplateSync({
         action: "getTemplates",
-        shopDomain,
+        shopId,
         themeId
       });
       if (response.success && response.data) {

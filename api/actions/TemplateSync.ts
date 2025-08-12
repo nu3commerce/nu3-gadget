@@ -4,16 +4,16 @@ import { getAvailableShops } from "../services/shopifyConfig";
 
 export const params = {
   action: { type: "string" },
-  shopDomain: { type: "string" },
+  shopId: { type: "string" },
   themeId: { type: "string" },
   sourceShopDomain: { type: "string" },
   sourceThemeId: { type: "string" },
-  templateKeys: { 
+  templateKeys: {
     type: "object",
     properties: {},
     additionalProperties: true
   },
-  targetShopDomains: { 
+  targetShopDomains: {
     type: "object",
     properties: {},
     additionalProperties: true
@@ -21,9 +21,9 @@ export const params = {
 };
 
 export const run: ActionRun = async ({ params, logger }) => {
-  const { action, shopDomain, themeId, sourceShopDomain, sourceThemeId, templateKeys, targetShopDomains } = params as {
+  const { action, shopId, themeId, sourceShopDomain, sourceThemeId, templateKeys, targetShopDomains } = params as {
     action?: string;
-    shopDomain?: string;
+    shopId?: string;
     themeId?: string;
     sourceShopDomain?: string;
     sourceThemeId?: string;
@@ -45,19 +45,21 @@ export const run: ActionRun = async ({ params, logger }) => {
         return { success: true, data: transformedShops };
 
       case "getThemes": {
-        if (!shopDomain) {
+        if (!shopId) {
           throw new Error("Shop domain is required");
         }
-        const shopifyClient = templateSyncManager.createShopifyClient(shopDomain);
-        const themes = await templateSyncManager.getThemes(shopDomain, shopifyClient);
+
+        const shopifyClient = templateSyncManager.createShopifyClient(shopId);
+        const themes = await templateSyncManager.getThemes(shopId, shopifyClient);
+
         return { success: true, data: themes };
       }
 
       case "getTemplates": {
-        if (!shopDomain || !themeId) {
-          throw new Error("Shop domain and theme ID are required");
+        if (!shopId || !themeId) {
+          throw new Error("Shop ID and theme ID are required");
         }
-        const shopifyClient = templateSyncManager.createShopifyClient(shopDomain);
+        const shopifyClient = templateSyncManager.createShopifyClient(shopId);
         const assets = await templateSyncManager.getAssets(parseInt(themeId), shopifyClient);
         const templates = templateSyncManager.getTemplates(assets);
         return { success: true, data: templates };

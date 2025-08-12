@@ -42,18 +42,18 @@ export function getAvailableShops(): ShopConfig[] {
 /**
  * Get shop configuration by shop domain
  */
-export function getShopConfig(shopDomain: string): ShopConfig | null {
+export function getShopConfig(shopId: string): ShopConfig | null {
   const shops = getAvailableShops();
-  return shops.find(shop => shop.shop === shopDomain) || null;
+  return shops.find(shop => shop.shop === shopId) || null;
 }
 
 /**
  * Create Shopify API client for a specific shop
  */
-export function createShopifyClient(shopDomain: string) {
-  const shopConfig = getShopConfig(shopDomain);
+export function createShopifyClient(shopId: string) {
+  const shopConfig = getShopConfig(shopId);
   if (!shopConfig) {
-    throw new Error(`Shop configuration not found for: ${shopDomain}`);
+    throw new Error(`Shop configuration not found for: ${shopId}`);
   }
 
   const config = getShopifyConfig();
