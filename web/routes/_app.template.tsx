@@ -255,7 +255,7 @@ export default function Template() {
                   label="Select Shop"
                   options={shops.map(shop => ({
                     label: shop.name || shop.myshopifyDomain || "",
-                    value: shop.myshopifyDomain || shop.id,
+                    value: shop.id,
                   }))}
                   onChange={handleShopChange}
                   value={selectedShop}
@@ -332,13 +332,13 @@ export default function Template() {
                     <div style={{ maxHeight: "500px", overflow: "auto" }}>
                       <BlockStack gap="300">
                         {shops
-                          .filter(shop => (shop.myshopifyDomain || shop.id) !== selectedShop)
+                          .filter(shop => shop.id !== selectedShop)
                           .map(shop => (
                             <Checkbox
                               key={shop.id}
                               label={shop.name || shop.myshopifyDomain}
-                              checked={selectedTargets.includes(shop.myshopifyDomain || shop.id)}
-                              onChange={(checked) => handleTargetSelection(shop.myshopifyDomain || shop.id, checked)}
+                              checked={selectedTargets.includes(shop.id)}
+                              onChange={(checked) => handleTargetSelection(shop.id, checked)}
                               disabled={isLoading || selectedTemplates.length === 0}
                             />
                           ))}
