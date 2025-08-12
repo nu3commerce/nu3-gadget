@@ -5,7 +5,10 @@ export function NavMenu() {
   return (
     <AppBridgeNavMenu>
       <Link to="/" rel="home">
-        Shop Information
+        Dashboard
+      </Link>
+      <Link to="/template">
+        Template Sync
       </Link>
     </AppBridgeNavMenu>
   );

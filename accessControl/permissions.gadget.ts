@@ -52,6 +52,9 @@ export const permissions: GadgetPermissions = {
           },
         },
       },
+      actions: {
+        TemplateSync: true,
+      },
     },
     unauthenticated: {
       storageKey: "unauthenticated",

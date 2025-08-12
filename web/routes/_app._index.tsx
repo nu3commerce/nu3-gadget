@@ -22,13 +22,13 @@ export default function Index() {
             <Text variant="headingMd" as="h6">
               Best Before Notice Manager
             </Text>
-            <AutoTable
+            {/* <AutoTable
               model={api.logs}
               columns={["createdAt", "status", "message", "error", "source"]}
               initialSort={{ createdAt: "Descending" }}
               paginate={false}
               filter={{ source: { isSet: true, equals: "BestBeforeNotice" } }}
-            />
+            /> */}
           </Card>
         </Layout.Section>
         <Layout.Section>
@@ -36,13 +36,13 @@ export default function Index() {
             <Text variant="headingMd" as="h6">
               PriceApi Sync Logs
             </Text>
-            <AutoTable
-              model={api.logs}
+            {/* <AutoTable
+              model={apilogs}
               columns={["createdAt", "status", "message", "error", "source"]}
               initialSort={{ createdAt: "Descending" }}
               paginate={false}
               filter={{ source: { isSet: true, equals: "PriceApiSync" } }}
-            />
+            /> */}
           </Card>
         </Layout.Section>
       </Layout>

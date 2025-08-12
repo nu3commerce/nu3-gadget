@@ -2,6 +2,7 @@
 node_modules/
 **/.DS_Store
 .react-router/
+_old_sync/
 
 # Shopify
 extensions/**/dist
